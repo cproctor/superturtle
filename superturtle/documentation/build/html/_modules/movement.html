@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>movement &#8212; MWC Drawing Helpers 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for movement</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Helpers</span>
+<span class="c1"># By Chris Proctor</span>
+<span class="c1"># ----------------</span>
+<span class="c1"># A mishmash of useful functions. Feel free to use these in your own projects if they are helpful to you.</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># ! Advanced !</span>
+<span class="c1"># =============================================================================</span>
+<span class="c1"># This module contains some fancy code that we don&#39;t expect you to understand</span>
+<span class="c1"># yet. That&#39;s ok--as long as we know how to use code, we don&#39;t have to</span>
+<span class="c1"># understand everything about it. </span>
+<span class="c1"># Check out the documentation for documentation on how to use this code.</span>
+
+<span class="c1"># Of course, if you want to dig into this module, feel free. You can ask a</span>
+<span class="c1"># teacher about it if you&#39;re interested.</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">cycle</span>
+
+<div class="viewcode-block" id="fly"><a class="viewcode-back" href="../movement.html#movement.fly">[docs]</a><span class="k">def</span> <span class="nf">fly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Moves the turtle to (x,y) without drawing.</span>
+
+<span class="sd">    This is really just a simple shortcut for lifting the pen, </span>
+<span class="sd">    going to a position, and putting the pen down again. But it&#39;s such</span>
+<span class="sd">    a commonly-used pattern that it makes sense to put it into a function.</span>
+<span class="sd">    Here&#39;s an example::</span>
+
+<span class="sd">        from turtle import setheading, forward</span>
+<span class="sd">        from movement import fly</span>
+<span class="sd">        from math import sin, cos, tau</span>
+
+<span class="sd">        def to_radians(degrees):</span>
+<span class="sd">            return degrees * (tau / 360)</span>
+
+<span class="sd">        for angle in range(0, 360, 20):</span>
+<span class="sd">            fly(50 * cos(to_radians(angle)), 50 * sin(to_radians(angle)))</span>
+<span class="sd">            setheading(angle)</span>
+<span class="sd">            forward(100)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">penup</span><span class="p">()</span>
+    <span class="n">goto</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">pendown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="update_position"><a class="viewcode-back" href="../movement.html#movement.update_position">[docs]</a><span class="k">def</span> <span class="nf">update_position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates the turtle&#39;s position, adding x to the turtle&#39;s current x and y to the</span>
+<span class="sd">    turtle&#39;s current y. </span>
+<span class="sd">    Generally, this function should be called with two arguments, but it may</span>
+<span class="sd">    also be called with a list containing x and y values::</span>
+
+<span class="sd">        update_position(10, 20)</span>
+<span class="sd">        update_position([10, 20])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">current_x</span><span class="p">,</span> <span class="n">current_y</span> <span class="o">=</span> <span class="n">position</span><span class="p">()</span>
+    <span class="n">penup</span><span class="p">()</span>
+    <span class="n">goto</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">current_x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">current_y</span><span class="p">)</span>
+    <span class="n">pendown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="restore_state_when_finished"><a class="viewcode-back" href="../movement.html#movement.restore_state_when_finished">[docs]</a><span class="k">class</span> <span class="nc">restore_state_when_finished</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A context manager which records the turtle&#39;s position and heading</span>
+<span class="sd">    at the beginning and restores them at the end of the code block.</span>
+<span class="sd">    For example::</span>
+
+<span class="sd">        from turtle import forward, right</span>
+<span class="sd">        from helpers import restore_state_when_finished</span>
+<span class="sd">        for angle in range(0, 360, 15):</span>
+<span class="sd">            with restore_state_when_finished():</span>
+<span class="sd">                right(angle)</span>
+<span class="sd">                forward(100)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">position</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heading</span> <span class="o">=</span> <span class="n">heading</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">penup</span><span class="p">()</span>
+        <span class="n">setposition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+        <span class="n">setheading</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heading</span><span class="p">)</span>
+        <span class="n">pendown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="no_delay"><a class="viewcode-back" href="../movement.html#movement.no_delay">[docs]</a><span class="k">class</span> <span class="nc">no_delay</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A context manager which causes drawing code to run instantly.</span>
+
+<span class="sd">       For example::</span>
+
+<span class="sd">           from movement import fly, no_delay</span>
+<span class="sd">        from turtle import forward, right</span>
+<span class="sd">        fly(-150, 150)</span>
+<span class="sd">        with no_delay():</span>
+<span class="sd">            for i in range(720):</span>
+<span class="sd">                forward(300)</span>
+<span class="sd">                right(71)</span>
+<span class="sd">        input()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">tracer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span><span class="p">()</span>
+        <span class="n">tracer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">update</span><span class="p">()</span>
+        <span class="n">tracer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">forward</span><span class="p">,</span> <span class="n">right</span>
+
+    <span class="k">with</span> <span class="n">no_delay</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">forward</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+            <span class="n">right</span><span class="p">(</span><span class="mi">181</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;That was fast!&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MWC Drawing Helpers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lines.html">Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../movement.html">Movement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation.html">Animation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Chris Proctor.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

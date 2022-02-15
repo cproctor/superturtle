@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Movement &#8212; MWC Drawing Helpers 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Animation" href="animation.html" />
+    <link rel="prev" title="Lines" href="lines.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-movement">
+<span id="movement"></span><h1>Movement<a class="headerlink" href="#module-movement" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="movement.fly">
+<span class="sig-prename descclassname"><span class="pre">movement.</span></span><span class="sig-name descname"><span class="pre">fly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/movement.html#fly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#movement.fly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the turtle to (x,y) without drawing.</p>
+<p>This is really just a simple shortcut for lifting the pen,
+going to a position, and putting the pen down again. But it’s such
+a commonly-used pattern that it makes sense to put it into a function.
+Here’s an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">setheading</span><span class="p">,</span> <span class="n">forward</span>
+<span class="kn">from</span> <span class="nn">movement</span> <span class="kn">import</span> <span class="n">fly</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">tau</span>
+
+<span class="k">def</span> <span class="nf">to_radians</span><span class="p">(</span><span class="n">degrees</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">degrees</span> <span class="o">*</span> <span class="p">(</span><span class="n">tau</span> <span class="o">/</span> <span class="mi">360</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+    <span class="n">fly</span><span class="p">(</span><span class="mi">50</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">to_radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">to_radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)))</span>
+    <span class="n">setheading</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="movement.update_position">
+<span class="sig-prename descclassname"><span class="pre">movement.</span></span><span class="sig-name descname"><span class="pre">update_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/movement.html#update_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#movement.update_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the turtle’s position, adding x to the turtle’s current x and y to the
+turtle’s current y.
+Generally, this function should be called with two arguments, but it may
+also be called with a list containing x and y values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">update_position</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">update_position</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="movement.restore_state_when_finished">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">movement.</span></span><span class="sig-name descname"><span class="pre">restore_state_when_finished</span></span><a class="reference internal" href="_modules/movement.html#restore_state_when_finished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#movement.restore_state_when_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>A context manager which records the turtle’s position and heading
+at the beginning and restores them at the end of the code block.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">forward</span><span class="p">,</span> <span class="n">right</span>
+<span class="kn">from</span> <span class="nn">helpers</span> <span class="kn">import</span> <span class="n">restore_state_when_finished</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">restore_state_when_finished</span><span class="p">():</span>
+        <span class="n">right</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+        <span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="movement.no_delay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">movement.</span></span><span class="sig-name descname"><span class="pre">no_delay</span></span><a class="reference internal" href="_modules/movement.html#no_delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#movement.no_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>A context manager which causes drawing code to run instantly.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="kn">from</span> <span class="nn">movement</span> <span class="kn">import</span> <span class="n">fly</span><span class="p">,</span> <span class="n">no_delay</span>
+<span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">forward</span><span class="p">,</span> <span class="n">right</span>
+<span class="n">fly</span><span class="p">(</span><span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">no_delay</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">720</span><span class="p">):</span>
+        <span class="n">forward</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+        <span class="n">right</span><span class="p">(</span><span class="mi">71</span><span class="p">)</span>
+<span class="nb">input</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MWC Drawing Helpers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lines.html">Lines</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Movement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animation.html">Animation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="lines.html" title="previous chapter">Lines</a></li>
+      <li>Next: <a href="animation.html" title="next chapter">Animation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Chris Proctor.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/movement.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

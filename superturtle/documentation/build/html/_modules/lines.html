@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lines &#8212; MWC Drawing Helpers 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for lines</h1><div class="highlight"><pre>
+<span></span><span class="c1"># lines.py</span>
+<span class="c1"># by Chris Proctor</span>
+<span class="c1"># Helper functions for playing with how the turtle draws</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># ! Advanced !</span>
+<span class="c1"># =============================================================================</span>
+<span class="c1"># This module contains some fancy code that we don&#39;t expect you to understand </span>
+<span class="c1"># yet. That&#39;s ok--as long as we know how to use code, we don&#39;t have to </span>
+<span class="c1"># understand everything about it. (Do you understand everything about </span>
+<span class="c1"># MacOS?) Check out the README for documentation on how to use this code. </span>
+
+<span class="c1"># Of course, if you want to dig into this module, feel free. You can ask a </span>
+<span class="c1"># teacher about it if you&#39;re interested. </span>
+<span class="c1"># =============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
+<span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">Turtle</span><span class="p">,</span> <span class="n">pendown</span><span class="p">,</span> <span class="n">penup</span><span class="p">,</span> <span class="n">pencolor</span>
+
+<span class="k">class</span> <span class="nc">Segmenter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Breaks a distance (length) into segments, which are yielded one at a time.</span>
+<span class="sd">    Whatever&#39;s left over at the end gets yielded too. If start_at is given, </span>
+<span class="sd">    the pattern is offset by this much. For example:</span>
+<span class="sd">    </span>
+<span class="sd">        &gt;&gt;&gt; from drawing.lines import Segmenter</span>
+<span class="sd">        &gt;&gt;&gt; list(Segmenter([1, 5]).segment(20))</span>
+<span class="sd">        [1, 5, 1, 5, 1, 5, 1, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="s2">&quot;Should be initialized with a pattern like [(10, penup), (20, pendown)]&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remainder_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Segments `length` into chunks according to the pattern, yielding each chunk</span>
+<span class="sd">        along with a boolean indicating whether there is more coming</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder_state</span>
+                <span class="n">length</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remainder_state</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span> <span class="o">-=</span> <span class="n">length</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_cycle</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;=</span> <span class="n">seg</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">seg</span><span class="p">,</span> <span class="n">state</span>
+                    <span class="n">length</span> <span class="o">-=</span> <span class="n">seg</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">length</span><span class="p">,</span> <span class="n">state</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remainder</span> <span class="o">=</span> <span class="n">seg</span> <span class="o">-</span> <span class="n">length</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remainder_state</span> <span class="o">=</span> <span class="n">state</span>
+                    <span class="k">return</span> 
+
+<span class="k">def</span> <span class="nf">go_segmented</span><span class="p">(</span><span class="n">turtle</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+    <span class="s2">&quot;This is the fake go function that we&#39;re going to inject into the turtle&quot;</span>
+    <span class="k">for</span> <span class="n">seg</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">turtle</span><span class="o">.</span><span class="n">segmenter</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">distance</span><span class="p">):</span>
+        <span class="n">state</span><span class="p">()</span>
+        <span class="n">turtle</span><span class="o">.</span><span class="n">true_go</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">color_setter_factory</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+    <span class="s2">&quot;Returns a function that sets the pencolor&quot;</span>
+    <span class="k">def</span> <span class="nf">set_color</span><span class="p">():</span>
+        <span class="n">pencolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">set_color</span>
+
+<div class="viewcode-block" id="dashes"><a class="viewcode-back" href="../lines.html#lines.dashes">[docs]</a><span class="k">class</span> <span class="nc">dashes</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A context manager which causes a code block to draw with dashes. </span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        spacing (int): (Optional) The length of each dash and space in pixels. Defaults to 20.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        from lines import dashes</span>
+<span class="sd">        with dashes():</span>
+<span class="sd">            for side in range(4):</span>
+<span class="sd">                forward(100)</span>
+<span class="sd">                right(90)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="n">spacing</span>
+    
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">segmenter</span> <span class="o">=</span> <span class="n">Segmenter</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">,</span> <span class="n">pendown</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">,</span> <span class="n">penup</span><span class="p">)])</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">go_segmented</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span>
+        <span class="k">del</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span></div>
+
+<div class="viewcode-block" id="dots"><a class="viewcode-back" href="../lines.html#lines.dots">[docs]</a><span class="k">class</span> <span class="nc">dots</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A context manager which causes a code block to draw with dots.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        spacing (int): (Optional) The space between each dot in pixels. Defaults to 10.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        from lines import dots</span>
+<span class="sd">        with dots():</span>
+<span class="sd">            for side in range(5):</span>
+<span class="sd">                forward(100)</span>
+<span class="sd">                right(360/5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="n">spacing</span>
+    
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">segmenter</span> <span class="o">=</span> <span class="n">Segmenter</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pendown</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">,</span> <span class="n">penup</span><span class="p">)])</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">go_segmented</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span>
+        <span class="k">del</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span></div>
+
+<div class="viewcode-block" id="rainbow"><a class="viewcode-back" href="../lines.html#lines.rainbow">[docs]</a><span class="k">class</span> <span class="nc">rainbow</span><span class="p">:</span>
+    <span class="s2">&quot;A context manager which causes a code block to draw in rainbow colors&quot;</span>
+
+    <span class="n">default_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;purple&#39;</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="n">spacing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span> <span class="ow">or</span> <span class="n">rainbow</span><span class="o">.</span><span class="n">default_colors</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">segmenter</span> <span class="o">=</span> <span class="n">Segmenter</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">,</span> <span class="n">color_setter_factory</span><span class="p">(</span><span class="n">color</span><span class="p">))</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">])</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">go_segmented</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">Turtle</span><span class="o">.</span><span class="n">_go</span> <span class="o">=</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span>
+        <span class="k">del</span> <span class="n">Turtle</span><span class="o">.</span><span class="n">true_go</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="n">pensize</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">rainbow</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+            <span class="n">forward</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">right</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">360</span><span class="o">/</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MWC Drawing Helpers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lines.html">Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../movement.html">Movement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation.html">Animation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Chris Proctor.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
