@@ -1,4 +1,4 @@
-# Animation.py
+# animation.py
 # ----------------------
 # By Chris Proctor
 #
@@ -6,7 +6,7 @@
 from pathlib import Path
 from shutil import rmtree
 from subprocess import run
-from movement import no_delay
+from superturtle.movement import no_delay
 from turtle import (
     Turtle, 
     left, 
@@ -28,39 +28,43 @@ from easing_functions import LinearInOut
 
 FRAMES_PATH = Path(".frames")
 
-def animate(frames=1, duration=1, loop=False, debug=False, gif_filename=None):
-    """Runs an animation, frame by frame.
+def animate(frames=1, loop=False, debug=False, gif_filename=None):
+    """Runs an animation, frame by frame, at a fixed frame rate of 20 fps.
     An animation consists of a bunch of frames shown one after another. 
     Before creating an animation, create a static image and then think about
     how you would like for it to move. The simplest way to use `animate` is
-    with no arguments; this produces a static image. (Not much of an animation!)
+    with no arguments; this produces a static image. (Not much of an animation!)::
+
         for frame in animate():
             draw_my_picture(frame)
+
     Once you are happy with your static image, specify `frames` and `animate`
-    will run the provided code block over and over, drawing one frame at a time:
+    will run the provided code block over and over, drawing one frame at a time::
     
         for frame in animate(frames=6, debug=True):
             draw_my_picture(frame)
-    Because we set `debug` to `True`, you will see the following output in the Terminal: 
+
+    Because we set `debug` to `True`, you will see the following output in the Terminal.
     Additionally, since we are in debug mode, you need to press enter to advance one
-    frame at a time. 
+    frame at a time.::
+
         Drawing frame 0
         Drawing frame 1
         Drawing frame 2
         Drawing frame 3
         Drawing frame 4
         Drawing frame 5
-    Attributes:
-        frames: The total number of frames in your animation. 
-        duration: Total length of animation, in seconds. 
-        loop: When True, the animation will play in a loop.
-        debug: When True, renders the animation in debug mode.
-        gif_filename: When provided, saves the animation as a gif, with 10 frames per second.
+
+    Arguments:
+        frames (int): The total number of frames in your animation. 
+        loop (bool): When True, the animation will play in a loop.
+        debug (bool): When True, renders the animation in debug mode.
+        gif_filename (str): When provided, saves the animation as a gif, with 10 frames per second.
     """
     start_time = time()
     if frames <= 0:
         raise AnimationError("frames must be a positive integer")
-    frame_delta = duration / frames
+    frame_delta = 0.05
     hideturtle()
     if debug:
         frame_iterator = debug_iter(frames)
@@ -97,12 +101,12 @@ def animate(frames=1, duration=1, loop=False, debug=False, gif_filename=None):
 
 class Frame:
     """ Represents one frame in an animation.
-    When creating an animation `animate` will yield one `Frame` for each 
+    When creating an animation, `animate` will yield one `Frame` for each 
     frame. The `Frame` can be used to check information, such as the current 
     frame index (the first frame's index is 0; the tenth frame's index is 9). 
     The `Frame` can also be used to create motion through the use of transformations. 
     A transformation is a change to the picture which gradually changes from frame
-    to frame. The three transformations are `rotate`, `scale`, and 
+    to frame. The three supported transformations are `rotate`, `scale`, and 
     `translate`. 
     """
     def __init__(self, num_frames, index=0, debug=False):
@@ -120,26 +124,28 @@ class Frame:
         exit()
 
     def rotate(self, start, stop=None, first_frame=None, last_frame=None, cycles=1, mirror=False, easing=None):
-        """Runs the code block within a rotation.
+        """Runs the code block within a rotation::
+
                 for frame in animate(frames=30):
                     with frame.rotate(0, 90):
                         square(100)
-            Attributes:
-                start: the initial value.
-                stop: (optional) the final value. If not provided, this will be a static 
+
+            Arguments:
+                start (int): the initial value.
+                stop (int): (optional) the final value. If not provided, this will be a static 
                     rotation of `start` on every frame.
-                first_frame: (optional) The first frame at which this rotation should be    
+                first_frame (int): (optional) The first frame at which this rotation should be    
                     interpolated. If given, the rotation will be `start` at `first_frame` 
                     and all prior frames. If not given, interpolation starts at the beginning
                     of the animation.
-                last_frame: (optional) The last frame at which this rotation should be 
+                last_frame(int): (optional) The last frame at which this rotation should be 
                     interpolated. If given, the rotation will be `stop` at `last_frame`
                     and all later frames. If not given, interpolation ends at the end of the
                     animation.
-                cycles: (optional) Number of times the animation should be run.
-                mirror: (optional) When True, the animation runs forward and then backwards 
+                cycles (int): (optional) Number of times the animation should be run.
+                mirror (bool): (optional) When True, the animation runs forward and then backwards 
                     between `first_frame` and `last_frame`.
-                easing: (optional) An easing function to use.
+                easing (function): (optional) An easing function to use.
         """
         value = self.interpolate(start, stop, first_frame, last_frame, cycles, mirror, easing)
         left(value)
@@ -149,26 +155,28 @@ class Frame:
 
     def scale(self, start, stop=None, first_frame=None, last_frame=None, cycles=1, mirror=False, easing=None):
         """Scales the code block. For this to work correctly, make sure you start from the 
-        center of the drawing in the code block.
+        center of the drawing in the code block::
+
                 for frame in animate(frames=30):
                     with frame.scale(1, 2):
                         square(100)
-            Attributes:
-                start: the initial value.
-                stop: (optional) the final value. If not provided, this will be a static 
-                    scaling of `start` on every frame.
-                first_frame: (optional) The first frame at which this scaling should be    
-                    interpolated. If given, the scaling will be `start` at `first_frame` 
-                    and all prior frames. If not given, interpolation starts at the beginning
-                    of the animation.
-                last_frame: (optional) The last frame at which this scaling should be 
-                    interpolated. If given, the scaling will be `stop` at `last_frame`
-                    and all later frames. If not given, interpolation ends at the end of the
-                    animation.
-                cycles: (optional) Number of times the animation should be run.
-                mirror: (optional) When True, the animation runs forward and then backwards 
-                    between `first_frame` and `last_frame`.
-                easing: (optional) An easing function to use.
+
+        Arguments:
+            start (int): the initial value.
+            stop (int): (optional) the final value. If not provided, this will be a static 
+            scaling of `start` on every frame.
+            first_frame (int): (optional) The first frame at which this scaling should be    
+                interpolated. If given, the scaling will be `start` at `first_frame` 
+                and all prior frames. If not given, interpolation starts at the beginning
+                of the animation.
+            last_frame (int): (optional) The last frame at which this scaling should be 
+                interpolated. If given, the scaling will be `stop` at `last_frame`
+                and all later frames. If not given, interpolation ends at the end of the
+                animation.
+            cycles (int): (optional) Number of times the animation should be run.
+            mirror (bool): (optional) When True, the animation runs forward and then backwards 
+                between `first_frame` and `last_frame`.
+            easing (function): (optional) An easing function to use.
         """
         value = self.interpolate(start, stop, first_frame, last_frame, cycles, mirror, easing)
         repair = self._scale_turtle_go(value)
@@ -177,26 +185,28 @@ class Frame:
         return self
 
     def translate(self, start, stop=None, first_frame=None, last_frame=None, cycles=1, mirror=False, easing=None):
-        """Translates (moves) the code block in the current coordinate space.
+        """Translates (moves) the code block in the current coordinate space::
+
                 for frame in animate(frames=30):
                     with frame.translate([0, 0], [100, 100]):
                         square(100)
-            Attributes:
-                start: the initial value.
-                stop: (optional) the final value. If not provided, this will be a static 
+
+            Arguments:
+                start (int): the initial value.
+                stop (int): (optional) the final value. If not provided, this will be a static 
                     translation of `start` on every frame.
-                first_frame: (optional) The first frame at which this translation should be    
+                first_frame (int): (optional) The first frame at which this translation should be    
                     interpolated. If given, the translation will be `start` at `first_frame` 
                     and all prior frames. If not given, interpolation starts at the beginning
                     of the animation.
-                last_frame: (optional) The last frame at which this translation should be 
+                last_frame (int): (optional) The last frame at which this translation should be 
                     interpolated. If given, the translation will be `stop` at `last_frame`
                     and all later frames. If not given, interpolation ends at the end of the
                     animation.
-                cycles: (optional) Number of times the animation should be run.
-                mirror: (optional) When True, the animation runs forward and then backwards 
+                cycles (int): (optional) Number of times the animation should be run.
+                mirror (bool): (optional) When True, the animation runs forward and then backwards 
                     between `first_frame` and `last_frame`.
-                easing: (optional) An easing function to use.
+                easing (function): (optional) An easing function to use.
         """
         if stop:
             x0, y0 = start
@@ -249,7 +259,8 @@ class Frame:
         between the endpoints. 
         Interpolation is used internally by all three of the transformations (rotate, scale, and translate), 
         but you can use it directly if you want. For example, if you want to scale just one side of a 
-        rectangle:
+        rectangle::
+
             def rectangle(a, b):    
                 for _ in range(2):
                     forward(a)
@@ -257,24 +268,25 @@ class Frame:
                     forward(b)
                     right(90)
             for frame in animate(frames=60):
-                width = frame.interpolate(20, 100)
-                rectangle(20, width)
+                height = frame.interpolate(20, 80)
+                width = 100 - height
+                rectangle(height, width)
         
-            Attributes:
-                start: the initial value.
-                stop: (optional) the final value. If not provided, `start` is returned.
-                first_frame: (optional) The first frame at which interpolation should be    
-                    used. If given, the value will be `start` at `first_frame` 
-                    and all prior frames. If not given, interpolation starts at the beginning
-                    of the animation.
-                last_frame: (optional) The last frame at which interpolation should be 
-                    used. If given, the value will be `stop` at `last_frame`
-                    and all later frames. If not given, interpolation ends at the end of the
-                    animation.
-                cycles: (optional) Number of times the animation should be run.
-                mirror: (optional) When True, the interpolated value reaches `stop` halfway between
-                    `first_frame` and `last_frame`, then returns to `start`.
-                easing: (optional) An easing function to use.
+        Arguments:
+            start (int): the initial value.
+            stop (int): (optional) the final value. If not provided, `start` is returned.
+            first_frame (int): (optional) The first frame at which interpolation should be    
+                used. If given, the value will be `start` at `first_frame` 
+                and all prior frames. If not given, interpolation starts at the beginning
+                of the animation.
+            last_frame (int): (optional) The last frame at which interpolation should be 
+                used. If given, the value will be `stop` at `last_frame`
+                and all later frames. If not given, interpolation ends at the end of the
+                animation.
+            cycles (int): (optional) Number of times the animation should be run.
+            mirror (bool): (optional) When True, the interpolated value reaches `stop` halfway between
+                `first_frame` and `last_frame`, then returns to `start`.
+            easing (function): (optional) An easing function to use.
         """
         if stop is None:
             return start

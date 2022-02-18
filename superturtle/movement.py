@@ -26,17 +26,18 @@ def fly(x,y):
     a commonly-used pattern that it makes sense to put it into a function.
     Here's an example::
 
-        from turtle import setheading, forward
-        from movement import fly
-        from math import sin, cos, tau
+        from turtle import forward, right
+        from superturtle.movement import fly
 
-        def to_radians(degrees):
-            return degrees * (tau / 360)
+        def square(size):
+            for side in range(4):
+                forward(size)
+                right(90)
 
-        for angle in range(0, 360, 20):
-            fly(50 * cos(to_radians(angle)), 50 * sin(to_radians(angle)))
-            setheading(angle)
-            forward(100)
+        for col in range(10):
+            for row in range(10):
+                fly(40 * col, 40 * row)
+                square(20)
     """
     penup()
     goto(x,y)
@@ -49,6 +50,7 @@ def update_position(x, y=None):
     Generally, this function should be called with two arguments, but it may
     also be called with a list containing x and y values::
 
+        from superturtle.movement import update_position
         update_position(10, 20)
         update_position([10, 20])
     """

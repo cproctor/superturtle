@@ -82,7 +82,7 @@ class dashes:
 
     ::
 
-        from lines import dashes
+        from superturtle.stroke import dashes
         with dashes():
             for side in range(4):
                 forward(100)
@@ -108,7 +108,8 @@ class dots:
 
     ::
 
-        from lines import dots
+        from turtle import forward, right
+        from superturtle.stroke import dots
         with dots():
             for side in range(5):
                 forward(100)
@@ -131,8 +132,15 @@ class rainbow:
 
     Arguments:
         spacing (int): (Optional) The length of each color segment. Defaults to 10.
-        colors (list): (Optional) A sequence of color names. By default, uses 
+        colors (list): (Optional) A sequence of color names (any valid inputs to 
+            turtle.setcolor). By default, uses a rainbow.
 
+    ::
+
+        from turtle import forward
+        from superturtle.stroke import rainbow
+        with rainbow(["black", "grey", "white"]):
+            forward(60)
     """
 
     default_colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
@@ -149,11 +157,3 @@ class rainbow:
     def __exit__(self, exc_type, exc_value, traceback):
         Turtle._go = Turtle.true_go
         del Turtle.true_go
-
-if __name__ == '__main__':
-    from turtle import *
-    pensize(6)
-    with rainbow():
-        for i in range(100):
-            forward(i)
-            right(2 * 360/(i+1))
