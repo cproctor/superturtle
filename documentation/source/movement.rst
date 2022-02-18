@@ -1,6 +1,8 @@
+.. _movement:
+
 Movement
 ========
 
-.. automodule:: movement
+.. automodule:: superturtle.movement
    :members:
 

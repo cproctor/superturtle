@@ -14,15 +14,14 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
-
 # -- Project information -----------------------------------------------------
 
-project = 'MWC Drawing Helpers'
+project = 'Superturtle'
 copyright = '2022, Chris Proctor'
 author = 'Chris Proctor'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '0.0.2'
 
 
 # -- General configuration ---------------------------------------------------

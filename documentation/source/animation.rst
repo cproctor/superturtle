@@ -1,7 +1,10 @@
+.. _animation: 
+
 Animation
 =========
 
-.. automodule animation
+.. autoclass:: superturtle.animation.animate
    :members:
 
-
+.. autoclass:: superturtle.animation.Frame
+   :members:
