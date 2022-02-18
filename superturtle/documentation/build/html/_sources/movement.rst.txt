@@ -1,6 +1,0 @@
-Movement
-========
-
-.. automodule:: movement
-   :members:
-

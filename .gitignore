@@ -1,2 +1,6 @@
 dist/*
 superturtle/__pycache__/*
+documentation/build
+*.swp
+*.swo
+**/.DS_Store
