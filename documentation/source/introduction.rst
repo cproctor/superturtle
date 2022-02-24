@@ -97,7 +97,7 @@ The examples above show how `animate` provides interpolation, smoothly changing 
 properties. But what if you don't want a smooth transition with a constant rate of change? Easing functions
 specify different rates of change, and can be imported from :ref:`easing`. Here's an example::
 
-    from easing_functions.easing import EaseOutBounce
+    from easing_functions.easing import easeOutBounce
 
     def rect(width, height):
         for i in range(2):
@@ -107,8 +107,8 @@ specify different rates of change, and can be imported from :ref:`easing`. Here'
             right(90)
 
     for frame in animate(60, loop=True):
-        with frame.translate([-100, 50], [100, 50], easing=BounceEaseOut):
-            width = frame.interpolate(100, 40, easing=BounceEaseOut)
+        with frame.translate([-100, 50], [100, 50], easing=easeOutBounce):
+            width = frame.interpolate(100, 40, easing=easeOutBounce)
             rect(width, 100)
 
 .. image:: ../doc_examples/eased_square.gif
