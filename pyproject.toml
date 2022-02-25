@@ -1,12 +1,11 @@
 [tool.poetry]
 name = "superturtle"
-version = "0.0.2"
+version = "0.0.3"
 description = "Extensions to Python's turtle"
 authors = ["Chris Proctor <chris@chrisproctor.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-easing-functions = "^1.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -22,9 +22,9 @@ from turtle import (
     forward,
     getcanvas,
 )
+from superturtle.easing import linear
 from itertools import cycle
 from time import time, sleep
-from easing_functions import LinearInOut
 
 FRAMES_PATH = Path(".frames")
 
@@ -300,7 +300,7 @@ class Frame:
         if mirror: 
             t = 1 - abs(2*t - 1)
         if easing is None:
-            easing = LinearInOut
+            easing = linear
         t = easing().ease(t)
         return start + t * (stop - start)
 
