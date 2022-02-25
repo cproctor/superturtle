@@ -90,6 +90,10 @@ animations with very little code. Here's an example::
 
 .. image:: ../doc_examples/animated_square_1.gif
 
+The example above shows how transformations can be nested: the small square orbits the large square
+because the second rotation is nested within the first. (The small square's orbit appears loopy because
+the orbit rotates around one corner of the larger square.)
+
 Easing
 ------
 
