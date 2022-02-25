@@ -26,6 +26,8 @@ module's heavy use of context managers. For example:
     with dots():
         forward(100)
 
+![Drawing with dots context manager](documentation/doc_examples/context_manager.png)
+
 Context managers are generally not introduced 
 early in a CS curriculum, but they fit naturally with other constructs which contextualize
 code blocks: loops, conditionals, and function definition. We hypothesize that introducing
