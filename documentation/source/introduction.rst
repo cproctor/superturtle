@@ -52,7 +52,7 @@ argument `gif_filename`.)
 Every animation is a sequence of still images (called frames), played at
 a certain speed to create the perception of motion. Usually, you want each frame to differ a bit from 
 the previous frame. The most effective way to accomplish this is to use a drawing function which is
-parametrized. That is, the drawing function takes in one or more numbers, and uses those to create
+parameterized. That is, the drawing function takes in one or more numbers, and uses those to create
 the drawing. As the numbers change, the drawing changes accordingly. The animate function takes inputs 
 describing your desired animation (e.g. the total number of frames in your animation; whether it should loop)
 and yields a sequence of frames. Each frame knows its place in the animation and can provide interpolated
