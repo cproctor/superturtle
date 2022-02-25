@@ -68,7 +68,7 @@ class restore_state_when_finished:
     For example::
 
         from turtle import forward, right
-        from helpers import restore_state_when_finished
+        from superturtle.movement import restore_state_when_finished
         for angle in range(0, 360, 15):
             with restore_state_when_finished():
                 right(angle)
@@ -90,8 +90,8 @@ class no_delay:
 
        For example::
 
-           from movement import fly, no_delay
         from turtle import forward, right
+        from superturtle.movement import fly, no_delay
         fly(-150, 150)
         with no_delay():
             for i in range(720):
