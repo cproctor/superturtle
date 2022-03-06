@@ -139,7 +139,7 @@ class rainbow:
 
         from turtle import forward
         from superturtle.stroke import rainbow
-        with rainbow(["black", "grey", "white"]):
+        with rainbow(colors=["black", "grey", "white"]):
             forward(60)
     """
 
