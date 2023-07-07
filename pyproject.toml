@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "superturtle"
-version = "0.0.3"
+version = "0.1.0"
 description = "Extensions to Python's turtle"
 authors = ["Chris Proctor <chris@chrisproctor.net>"]
+readme = "README.md"
+documentation = "https://superturtle.readthedocs.io/en/latest/"
 
 [tool.poetry.dependencies]
 python = "^3.9"
