@@ -17,11 +17,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Superturtle'
-copyright = '2022, Chris Proctor'
+copyright = '2022-2025, Chris Proctor'
 author = 'Chris Proctor'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.3'
+release = '0.1.1'
 
 
 # -- General configuration ---------------------------------------------------

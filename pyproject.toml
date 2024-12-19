@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superturtle"
-version = "0.1.0"
+version = "0.1.1"
 description = "Extensions to Python's turtle"
 authors = ["Chris Proctor <chris@chrisproctor.net>"]
 readme = "README.md"
@@ -8,10 +8,12 @@ documentation = "https://superturtle.readthedocs.io/en/latest/"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+
+[tool.poetry.group.docs.dependencies]
 sphinx = "^7.0.1"
 furo = "^2023.5.20"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^5.2"
 
 [build-system]
