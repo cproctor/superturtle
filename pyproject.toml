@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superturtle"
-version = "0.1.1"
+version = "0.2.0"
 description = "Extensions to Python's turtle"
 authors = ["Chris Proctor <chris@chrisproctor.net>"]
 readme = "README.md"

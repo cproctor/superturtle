@@ -296,7 +296,10 @@ class Frame:
             raise AnimationError("last_frame must be greater than first_frame")
         period = (last_frame - first_frame) / cycles
         ix = min(max(first_frame, self.index), last_frame)
-        t = ((ix - first_frame) % period) / period
+        if ix >= last_frame:
+            t = 1
+        else:
+            t = ((ix - first_frame) % period) / period
         if mirror: 
             t = 1 - abs(2*t - 1)
         if easing is None:
