@@ -1,13 +1,14 @@
-[tool.poetry]
+[project]
 name = "superturtle"
-version = "0.2.0"
+version = "1.0.0"
 description = "Extensions to Python's turtle"
-authors = ["Chris Proctor <chris@chrisproctor.net>"]
+authors = [
+    {name="Chris Proctor", email="chris@chrisproctor.net"}
+]
+license = {text = "MIT"}
 readme = "README.md"
 documentation = "https://superturtle.readthedocs.io/en/latest/"
-
-[tool.poetry.dependencies]
-python = "^3.9"
+requires-python = ">=3.10,<4.0"
 
 [tool.poetry.group.docs]
 optional = true
@@ -23,5 +24,8 @@ optional = true
 pytest = "^5.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
