@@ -70,7 +70,7 @@ numbers for your functions. Here's an example::
         size = frame.interpolate(50, 100, mirror=True)
         square(size)
 
-.. image:: ../doc_examples/animated_square_0.gif
+.. image:: ../doc_examples/animated_square_0.*
 
 Frames also provide context managers which interpolate transformations. Within these transformations' 
 code blocks, the canvas can be rotated, translated, and scaled. This allows you to create richly-detailed
@@ -88,7 +88,7 @@ animations with very little code. Here's an example::
                 pendown()
                 square(20)
 
-.. image:: ../doc_examples/animated_square_1.gif
+.. image:: ../doc_examples/animated_square_1.*
 
 The example above shows how transformations can be nested: the small square orbits the large square
 because the second rotation is nested within the first. (The small square's orbit appears loopy because
@@ -101,7 +101,7 @@ The examples above show how `animate` provides interpolation, smoothly changing 
 properties. But what if you don't want a smooth transition with a constant rate of change? Easing functions
 specify different rates of change, and can be imported from :ref:`easing`. Here's an example::
 
-    from easing_functions.easing import easeOutBounce
+    from superturtle.easing import easeOutBounce
 
     def rect(width, height):
         for i in range(2):
@@ -115,4 +115,4 @@ specify different rates of change, and can be imported from :ref:`easing`. Here'
             width = frame.interpolate(100, 40, easing=easeOutBounce)
             rect(width, 100)
 
-.. image:: ../doc_examples/eased_square.gif
+.. image:: ../doc_examples/eased_square.*

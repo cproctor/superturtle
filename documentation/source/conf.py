@@ -21,7 +21,7 @@ copyright = '2022-2025, Chris Proctor'
 author = 'Chris Proctor'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -59,3 +59,18 @@ html_static_path = ['_static']
 # -- Additional configuration  -------------------------------------------------
 autodoc_member_order = 'bysource'
 autodoc_typehints = 'none'
+
+# Prefer static file types for PDF build
+from sphinx.builders.html import StandaloneHTMLBuilder
+StandaloneHTMLBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/gif',
+    'image/png',
+    'image/jpeg'
+]
+from sphinx.builders.latex import LaTeXBuilder
+LaTeXBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/png',
+    'image/jpeg'
+]

@@ -1,6 +1,6 @@
 [project]
 name = "superturtle"
-version = "1.0.0"
+version = "1.0.1"
 description = "Extensions to Python's turtle"
 authors = [
     {name="Chris Proctor", email="chris@chrisproctor.net"}
