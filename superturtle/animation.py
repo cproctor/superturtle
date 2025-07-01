@@ -96,7 +96,7 @@ def animate(frames=1, loop=False, debug=False, gif_filename=None):
             
     if gif_filename:
         loopflag = "-loop 0 " if loop else ""
-        run(f"convert -delay 5 -dispose Background {loopflag}{FRAMES_PATH}/frame_*.eps {gif_filename}", shell=True, check=True)
+        run(f"magick -delay 5 -dispose Background {loopflag}{FRAMES_PATH}/frame_*.eps {gif_filename}", shell=True, check=True)
         rmtree(FRAMES_PATH)
 
 class Frame:
@@ -108,6 +108,12 @@ class Frame:
     A transformation is a change to the picture which gradually changes from frame
     to frame. The three supported transformations are `rotate`, `scale`, and 
     `translate`. 
+
+    The transformations provided by Superturtle animation frames (`rotate`, `translate`, `scale`)
+    only work for relative turtle movement (e.g. `forward`, `back`, `left`, `right`). 
+    Absolute turtle movement (e.g. `goto`, `setheading`) will not be affected by 
+    transformations.
+
     """
     def __init__(self, num_frames, index=0, debug=False):
         self.debug = debug

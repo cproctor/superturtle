@@ -15,7 +15,7 @@ def save(filename):
     """
     temp_file = Path("_temp.eps")
     getcanvas().postscript(file=temp_file)
-    cmd = f"convert {temp_file} -colorspace RGB {filename}"
+    cmd = f"magick {temp_file} -colorspace RGB {filename}"
     run(cmd, shell=True, check=True)
     temp_file.unlink()
 
