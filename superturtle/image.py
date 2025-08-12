@@ -9,7 +9,8 @@ from subprocess import run
 from svg_turtle import SvgTurtle
 
 def save(filename):
-    """Saves the canvas as an image.
+    """
+    Saves the canvas as an image, comparable to taking a screenshot.
 
     Arguments:
         filename (str): Location to save the file, including file extension.
@@ -21,7 +22,8 @@ def save(filename):
     temp_file.unlink()
 
 class save_svg:
-    """A context manager which saves turtle drawing in SVG format.
+    """
+    A context manager which saves turtle drawing in SVG format.
 
     Arguments:
         width (int): Width of resulting SVG file.
