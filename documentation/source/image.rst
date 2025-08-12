@@ -3,7 +3,7 @@
 Image
 =====
 
-Contains a function for saving the turtle's canvas as an image.
+Contains functions for saving turtle drawings. 
 
 .. automodule:: superturtle.image
    :members:
