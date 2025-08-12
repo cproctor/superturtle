@@ -32,6 +32,7 @@ class save_svg:
 
     ::
 
+        from turtle import circle
         from superturtle.image import save_svg
         with save_svg(500, 500, "image.svg"):
             circle(100)
