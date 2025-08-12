@@ -27,5 +27,7 @@ sphinxcontrib-htmlhelp==2.0.1
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
+svg_turtle==1.0.0
+svgwrite==1.4.3
 urllib3==2.0.3
 wcwidth==0.2.6
