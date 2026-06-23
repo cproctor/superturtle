@@ -1,13 +1,13 @@
 [project]
 name = "superturtle"
-version = "1.2.0"
+version = "1.2.1"
 description = "Extensions to Python's turtle"
 authors = [
     {name="Chris Proctor", email="chris@chrisproctor.net"}
 ]
 license = {text = "MIT"}
 readme = "README.md"
-documentation = "https://superturtle.readthedocs.io/en/latest/"
+documentation = "https://docs.makingwithcode.org/superturtle"
 requires-python = ">=3.10,<4.0"
 
 [tool.poetry.group.docs]
