@@ -41,6 +41,24 @@ class save_svg:
     `screensize(width, height)` function to set the canvas size. It helps to add a
     couple of extra pixels to the window size to avoid getting scroll bars.
 
+    **SVG fidelity**
+
+    ``turtle.circle()`` is normally approximated as a polygon. Inside
+    ``save_svg``, circles and arcs (when ``steps`` is not given) are
+    exported as true SVG ``<circle>`` or ``<path>`` arc elements.  Passing
+    an explicit ``steps`` argument preserves the polygon-approximation
+    behaviour, which is useful for drawing regular polygons.
+
+    Fill regions (``turtle.fill()``, or ``begin_fill()``/``end_fill()``)
+    are exported as closed SVG ``<polygon>`` elements whose ``fill``
+    attribute carries the turtle fill color and whose ``stroke`` attribute
+    carries the pen color.  This means the closed boundary is visible to a
+    pen plotter as a single continuous path, and downstream tools such as
+    Inkscape or vpype can apply hatch fills or other processing to the
+    colored region.  Note that the line strokes drawn *inside* a fill
+    region are merged into the polygon element and are not emitted as
+    separate ``<polyline>`` elements.
+
     Arguments:
         width (int): Width of resulting SVG file in pixels.
         height (int): Height of resulting SVG file in pixels.
@@ -52,7 +70,7 @@ class save_svg:
 
     ::
 
-        from turtle import circle, setup, screensize
+        from turtle import circle, forward, left, setup, screensize
         from superturtle.image import save_svg
 
         width, height = 816, 1056
@@ -60,7 +78,15 @@ class save_svg:
         screensize(width, height)
 
         with save_svg(width, height, "image.svg"):
+            # Exported as a true SVG <circle>, not a polygon approximation.
             circle(100)
+
+            # Filled square: exported as a closed <polygon> with fill and stroke.
+            color("black", "red")
+            with fill():
+                for _ in range(4):
+                    forward(80)
+                    left(90)
     """
     def __init__(self, width, height, filename, dryrun=False, group_colors=True):
         self.dryrun = dryrun

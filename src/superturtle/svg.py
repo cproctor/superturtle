@@ -1,6 +1,7 @@
+import math
 import re
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 try:
     import tkinter as tk
@@ -201,6 +202,9 @@ class SVGTurtle(RawTurtle):
         screen = SVGScreen(canvas)
         super().__init__(screen)
         self.speed(0)
+        self._svg_fill_items_start = None
+        self._svg_fill_prev_line_item = None
+        self._svg_fill_line_same = False
 
     def _drawturtle(self):
         pass
@@ -213,10 +217,149 @@ class SVGTurtle(RawTurtle):
         p['speed'] = 0
         return super().pen(p)
 
+    def circle(self, radius, extent=None, steps=None):
+        """Draw a circle or arc, emitting a true SVG circle/arc when steps is None.
+
+        When steps is explicitly given, the polygon-approximation behavior of the
+        standard turtle is preserved (useful for drawing regular polygons).
+        """
+        if steps is None:
+            was_filling = self.filling()
+            was_drawing = self._drawing
+            pos_before = self.pos()       # turtle coords (x, y)
+            heading_before = self.heading()
+            pen_color = self._pencolor
+            pen_size = self._pensize
+
+            # Lift the pen so super().circle() advances position and _fillpath
+            # without writing polygon-approximation coords into any line item.
+            if was_drawing:
+                self.penup()
+
+            super().circle(radius, extent, steps)
+
+            if was_drawing:
+                self.pendown()
+
+            # When inside a fill region the polygon's outline already traces the
+            # boundary, so we omit the separate arc stroke item.
+            if was_drawing and not was_filling:
+                k = self._degreesPerAU   # angular-unit → degrees conversion
+                canvas = self.getscreen().cv
+                canvas._items.append(_CanvasItem(
+                    method='arc',
+                    coords=(
+                        float(pos_before[0]),
+                        float(pos_before[1]),
+                        heading_before * k,                                        # degrees
+                        radius,
+                        (extent if extent is not None else self._fullcircle) * k,  # degrees
+                    ),
+                    attribs={'fill': pen_color, 'width': pen_size},
+                    z_order=len(canvas._items),
+                ))
+        else:
+            super().circle(radius, extent, steps)
+
+    def begin_fill(self):
+        """Begin a fill region; records the canvas state so end_fill can clean up."""
+        canvas = self.getscreen().cv
+        self._svg_fill_items_start = len(canvas._items)
+        # Save the current line item BEFORE begin_fill so we can detect whether
+        # _newLine (called inside begin_fill) reused it or replaced it.
+        # _newLine only creates a new item when len(currentLine) > 1; if the
+        # turtle hasn't drawn anything yet it reuses the existing item and that
+        # item will silently accumulate fill-region coordinates.
+        self._svg_fill_prev_line_item = self.currentLineItem
+        super().begin_fill()
+        # True when _newLine kept the same item (no pre-fill drawing existed).
+        self._svg_fill_line_same = (self.currentLineItem == self._svg_fill_prev_line_item)
+
+    def end_fill(self):
+        """Close the fill region.
+
+        Suppresses the line items drawn inside the fill (their edges are already
+        captured by the fill polygon) and adds the current pen color as the
+        polygon's outline stroke so downstream tools can distinguish the boundary.
+        """
+        fill_item_id = self._fillitem
+        pen_color = self._pencolor
+        pen_size = self._pensize
+        fill_items_start = self._svg_fill_items_start if self._svg_fill_items_start is not None else 0
+        prev_line_item = getattr(self, '_svg_fill_prev_line_item', None)
+        line_same = getattr(self, '_svg_fill_line_same', False)
+
+        super().end_fill()
+
+        canvas = self.getscreen().cv
+        # Suppress line items created during the fill region. The fill polygon
+        # already captures the boundary, so separate stroke items are redundant.
+        for i in range(fill_items_start, len(canvas._items)):
+            if canvas._items[i].method == 'line':
+                canvas._items[i].deleted = True
+
+        # When _newLine didn't create a fresh item at begin_fill time, the
+        # original currentLineItem was reused for fill content — delete it too.
+        if line_same and prev_line_item is not None:
+            canvas._items[prev_line_item].deleted = True
+
+        # Give the fill polygon a visible outline using the current pen.
+        if fill_item_id is not None:
+            canvas.itemconfigure(fill_item_id, outline=pen_color, width=pen_size)
+
+        self._svg_fill_items_start = None
+        self._svg_fill_prev_line_item = None
+        self._svg_fill_line_same = False
+
     def save_as(self, filename: str, group_colors: bool = True):
         canvas = self.getscreen().cv
         _write_svg(canvas, canvas.winfo_width(), canvas.winfo_height(),
                    filename, group_colors=group_colors)
+
+
+def _arc_svg_parts(coords, xoff: float, yoff: float) -> tuple[str, str]:
+    """Return (svg_tag, geometry_attrs) for an arc canvas item.
+
+    coords is (start_x, start_y, heading_deg, radius, extent_deg) in turtle
+    coordinate space (y-up, origin at canvas centre).  xoff/yoff shift to SVG
+    viewport coordinates (y-down, origin at top-left).
+    """
+    start_x, start_y, heading_deg, radius, extent_deg = coords
+    r = abs(radius)
+    h_rad = math.radians(heading_deg)
+
+    # Centre of the circle in turtle coords.
+    # The centre is `radius` units to the LEFT of the turtle's heading:
+    #   left direction = (-sin h, cos h)  →  centre = pos + radius * (-sin h, cos h)
+    cx = start_x - radius * math.sin(h_rad)
+    cy = start_y + radius * math.cos(h_rad)
+
+    if abs(extent_deg) >= 360:
+        # Full circle: SVG <circle> is exact and avoids the degenerate-arc problem.
+        cx_svg = cx + xoff
+        cy_svg = -cy + yoff
+        return 'circle', f'cx="{cx_svg:.3f}" cy="{cy_svg:.3f}" r="{r:.3f}"'
+
+    # Partial arc: SVG <path> with elliptical-arc command.
+    sx = start_x + xoff
+    sy = -start_y + yoff
+
+    # Angle from centre to start point, then sweep in the correct direction.
+    theta_start = math.atan2(start_y - cy, start_x - cx)
+    arc_dir = 1 if radius > 0 else -1   # positive radius → CCW in turtle (y-up)
+    theta_end = theta_start + math.radians(extent_deg) * arc_dir
+
+    ex_svg = (cx + r * math.cos(theta_end)) + xoff
+    ey_svg = -(cy + r * math.sin(theta_end)) + yoff
+
+    large_arc = 1 if abs(extent_deg) > 180 else 0
+    # CCW in turtle (y-up)  →  CW in SVG (y-down)  →  sweep-flag = 1
+    sweep = 1 if radius * extent_deg > 0 else 0
+
+    d = (f'M {sx:.3f},{sy:.3f}'
+         f' A {r:.3f},{r:.3f} 0 {large_arc} {sweep}'
+         f' {ex_svg:.3f},{ey_svg:.3f}')
+    return 'path', f'd="{d}"'
 
 
 def _write_svg(canvas: SVGCanvas, width: int, height: int, filename: str,
@@ -238,12 +381,12 @@ def _write_svg(canvas: SVGCanvas, width: int, height: int, filename: str,
             pairs.append(f'{x + xoff:.3f},{y + yoff:.3f}')
         return ' '.join(pairs)
 
-    # Only emit visible, non-deleted line/polygon items.
-    # Items with fill='' are invisible placeholders (turtle cursor, undrawn lines).
+    # Emit visible, non-deleted items: lines and arcs (stroke items) plus
+    # polygons whose fill attribute has been set (fill regions).
     drawable = [
         item for item in sorted(canvas._items, key=lambda i: i.z_order)
         if not item.deleted
-        and item.method in ('line', 'polygon')
+        and item.method in ('line', 'polygon', 'arc')
         and item.attribs.get('fill', '') != ''
     ]
 
@@ -260,26 +403,30 @@ def _write_svg(canvas: SVGCanvas, width: int, height: int, filename: str,
     ]
 
     if group_colors:
-        lines_by_color: dict[str, list[_CanvasItem]] = defaultdict(list)
+        strokes_by_color: dict[str, list[_CanvasItem]] = defaultdict(list)
         fill_items: list[_CanvasItem] = []
 
         for item in drawable:
-            if item.method == 'line':
-                lines_by_color[item.attribs.get('fill', 'black')].append(item)
+            if item.method in ('line', 'arc'):
+                strokes_by_color[item.attribs.get('fill', 'black')].append(item)
             else:
                 fill_items.append(item)
 
-        for color, group in lines_by_color.items():
+        for color, group in strokes_by_color.items():
             out.append(
                 f'  <g stroke="{color}" fill="none"'
                 f' stroke-linecap="round" {clip}>'
             )
             for item in group:
                 sw = item.attribs.get('width', 1)
-                out.append(
-                    f'    <polyline points="{point_str(item.coords)}"'
-                    f' stroke-width="{sw}"/>'
-                )
+                if item.method == 'arc':
+                    tag, geom = _arc_svg_parts(item.coords, xoff, yoff)
+                    out.append(f'    <{tag} {geom} stroke-width="{sw}"/>')
+                else:
+                    out.append(
+                        f'    <polyline points="{point_str(item.coords)}"'
+                        f' stroke-width="{sw}"/>'
+                    )
             out.append('  </g>')
 
         for item in fill_items:
@@ -293,8 +440,17 @@ def _write_svg(canvas: SVGCanvas, width: int, height: int, filename: str,
             )
     else:
         for item in drawable:
-            pts = point_str(item.coords)
-            if item.method == 'line':
+            if item.method == 'arc':
+                color = item.attribs.get('fill', 'black')
+                sw = item.attribs.get('width', 1)
+                tag, geom = _arc_svg_parts(item.coords, xoff, yoff)
+                out.append(
+                    f'  <{tag} {geom} fill="none"'
+                    f' stroke="{color}" stroke-width="{sw}"'
+                    f' stroke-linecap="round" {clip}/>'
+                )
+            elif item.method == 'line':
+                pts = point_str(item.coords)
                 color = item.attribs.get('fill', 'black')
                 sw = item.attribs.get('width', 1)
                 out.append(
@@ -303,6 +459,7 @@ def _write_svg(canvas: SVGCanvas, width: int, height: int, filename: str,
                     f' fill="none" stroke-linecap="round" {clip}/>'
                 )
             else:
+                pts = point_str(item.coords)
                 fill = item.attribs.get('fill', 'none')
                 stroke = item.attribs.get('outline', '') or 'none'
                 sw = item.attribs.get('width', 0)
